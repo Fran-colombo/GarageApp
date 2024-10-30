@@ -1,0 +1,38 @@
+<main class="flex-column-center">
+    <table>
+        <thead>
+            <tr> 
+                <th>Cochera</th>
+                <th>Patente</th>
+                <th>Fecha</th>
+                <th>Cobrado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (transaccion of this.dataEstacionamientoService.ultimasTransacciones; track $index) {
+                <tr>
+                    <td>
+                        {{ transaccion.idCochera }}
+                    </td>
+                    <td>
+                        {{ transaccion.patente }}
+                    </td>
+                    <td>
+                        @if (transaccion.horaIngreso) {
+                            {{ transaccion.horaEgreso | date:'dd/MM/yyyy' }}
+                        } @else {
+                            -
+                        }
+                    </td>
+                    <td>
+                        @if (transaccion.costo) {
+                            {{ transaccion.costo | currency }}
+                        } @else {
+                            -
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</main>

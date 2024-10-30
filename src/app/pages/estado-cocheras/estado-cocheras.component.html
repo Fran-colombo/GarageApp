@@ -1,0 +1,56 @@
+<main class="flex-column-center">
+    <table>
+        <thead>
+        <td>Nº</td>
+        <td>Disponibilidad</td>
+        <td>Ingreso</td>
+        <td>Acciones</td>
+    </thead>
+    <tbody>
+        @for (cochera of dataCocherasService.cocheras; track cochera.id) {
+            <tr>
+                <td> {{ cochera.id }} </td>
+                <td>
+                     @if (cochera.deshabilitada) {
+                        <button class="deshabilitada">
+                            Deshabilitada
+                        </button>
+                    } @else if (cochera.estacionamiento?.horaIngreso && !cochera.estacionamiento?.horaEgreso) {
+                        
+                        <button (click)="cerrarEstacionamiento(cochera)">
+                            {{ cochera.estacionamiento?.patente }}
+                        </button>
+                    
+                    } @else {
+                        
+                        <button class="disponible" (click)="abrirEstacionamiento(cochera.id)">
+                            Disponible
+                        </button>
+                    
+                    }
+                </td>
+                <td>{{ cochera.descripcion }}</td>
+                <td class="acciones-container"> 
+                    @if(!cochera.estacionamiento?.patente){
+                        @if(authService.usuario?.esAdmin == true){
+                        @if(!cochera.deshabilitada ){
+                            <button (click)="preguntarDeshabilitarCochera(cochera.id)"><img src="/assets/img/icons/prohibido.png" alt="Deshabilitar cochera" class="acciones-container">
+                            </button>
+                        } @else {
+                            <button (click)="preguntarHabilitarCochera(cochera.id)"><img src="/assets/img/icons/ok.png" alt="Habilitar cochera" class="acciones-container"></button>
+                        }
+                            <button (click)="preguntarBorrarCochera(cochera.id)"><img src="/assets/img/icons/contenedor-de-basura.png" alt="Eliminar cochera" class="acciones-container"></button>
+                        
+                    }
+                    }
+                </td>
+            </tr>
+        }
+    
+    </tbody>
+</table>
+@if(authService.usuario?.esAdmin == true){
+        <button (click)="preguntarAgregarCochera()" class="boton-resaltado" id="agregar-cochera">+</button>
+}
+
+</main> 

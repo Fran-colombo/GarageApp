@@ -1,0 +1,42 @@
+<main class="flex-column-center">
+    <table class="pricing-table">
+        <thead>
+            <tr>
+                <th>Tipo de Vehículo</th>
+                <th>Tiempo</th>
+                <th>Precio</th>
+                <th>Acciones</th> 
+            </tr>
+        </thead>
+        <tbody>
+            @for (price of tarifaService.precios; track price.id) {
+                <tr>
+                    <td>
+                        @if (price.id == "MEDIAHORA") {
+                            Media Hora (o menos)
+                        } @else if (price.id == "PRIMERAHORA") {
+                            1 hora
+                        } @else {
+                            Más de una hora
+                        }
+                    </td>
+                    <td>
+                        @if (price.id == "MEDIAHORA") {
+                            Hasta 30 min ->
+                        } @else if (price.id == "PRIMERAHORA") {
+                            Hasta 1 hora ->
+                        } @else {
+                            Mayor a una hora (60 min * Hs) ->
+                        }
+                    </td>
+                    <td>${{ price.valor }},00</td>
+                    <td>
+                        <button (click)="updatePrice(price.id)" class="acciones-container">
+                            <img src="/assets/img/icons/edit.png" alt="edit fee" class="edit-icon">
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</main>

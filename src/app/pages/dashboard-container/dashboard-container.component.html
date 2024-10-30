@@ -1,0 +1,16 @@
+<header>
+    <h1> Parking App </h1>
+    <nav>
+        <a [routerLink]="['/parking-state']" routerLinkActive="link-activo">Estado cocheras</a>
+        @if(esAdmin){
+            <a [routerLink]="['/reports']" routerLinkActive="link-activo">Reportes</a>
+            <a [routerLink]="['/prices']" routerLinkActive="link-activo">Precios</a>
+    }
+        <div class="usuario">
+            <button (click)="cerrarSesion()" class="logout-button">
+                <img src="/assets/img/icons/logout.png" alt="Cerrar sesión" class="userlogo">
+            </button>
+        </div>
+    </nav>
+</header>
+<router-outlet />

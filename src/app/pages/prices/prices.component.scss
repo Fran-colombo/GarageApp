@@ -1,0 +1,80 @@
+@use "../../../../public/styles/colors.scss";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 85vh;
+    background: url("/assets/img/parkingpicture.jpeg") center/cover no-repeat;
+    color: colors.$color-texto;
+    padding-top: 10px; 
+}
+
+.acciones-container {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+
+    img.edit-icon {
+        width: 24px; 
+        height: 24px; 
+        transition: transform 0.3s, opacity 0.3s;
+
+        &:hover {
+            opacity: 0.8; 
+            transform: scale(1.1); 
+        }
+    }
+}
+
+table.pricing-table {
+    width: 60%; 
+    border: 2px solid colors.$color-borde; 
+    border-collapse: collapse;
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+    color: colors.$color-texto; 
+    text-align: center;
+
+    thead {
+        background-color: rgba(0, 0, 0, 0.9);
+        text-shadow: 0 0 5px colors.$color-borde; 
+
+        th {
+            padding: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid colors.$color-borde; 
+        }
+    }
+
+    tbody {
+        tr {
+            &:hover {
+                background-color: colors.$color-hover; 
+                transition: background-color 0.3s;
+            }
+
+            td {
+                padding: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                font-size: 1em;
+            }
+        }
+    }
+}
+
+h2 {
+    color: colors.$color-texto; 
+    font-size: 3rem;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.582);
+    text-align: center;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,57 @@
+@use "../../../../public/styles/colors.scss";
+$color-fondo: #0a0a0a;
+$color-texto: #ffffff;
+$color-accento: rgb(0, 255, 255);
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: $color-fondo;
+    font-family: Arial, sans-serif;
+    color: $color-texto;
+}
+
+.not-found-container {
+    text-align: center;
+    
+    .error-code {
+        font-size: 10rem;
+        font-weight: bold;
+        color: $color-accento;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .error-message {
+        font-size: 2rem;
+        margin: 10px 0;
+    }
+
+    .error-description {
+        font-size: 1rem;
+        color: lighten($color-texto, 30%);
+        margin-bottom: 20px;
+    }
+
+    .back-home {
+        display: inline-block;
+        padding: 12px 20px;
+        color: $color-fondo;
+        background-color: $color-accento;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        
+        &:hover {
+            background-color: darken($color-accento, 15%);
+        }
+    }
+}
