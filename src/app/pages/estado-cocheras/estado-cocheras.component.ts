@@ -6,6 +6,7 @@ import { DataCocherasService } from '../../services/data-cocheras.service';
 import { DataAuthService } from '../../services/data-auth.service';
 import { DataTarifasService } from '../../services/data-tarifas.service';
 import { ICochera } from '../../interfaces/cochera';
+import { min } from 'rxjs';
 
 @Component({
   selector: 'app-estado-cocheras',
@@ -19,7 +20,7 @@ export class EstadoCocherasComponent {
   dataTarifasService = inject(DataTarifasService);
   dataCocherasService = inject(DataCocherasService)
 
-
+  
 
   preguntarAgregarCochera(){
     Swal.fire({
@@ -28,7 +29,9 @@ export class EstadoCocherasComponent {
       confirmButtonText: "Agregar",
       denyButtonText: `Cancelar`,
       input: "text",
-      inputLabel: "Nombre cochera"
+      inputLabel: "Nombre cochera",
+      background: '#1a1a1a', 
+      color: '#ffffff',
     }).then(async (result) => {
       if (result.isConfirmed) {
         this.dataCocherasService.agregarCochera(result.value)
@@ -37,6 +40,7 @@ export class EstadoCocherasComponent {
     });
   }
   preguntarBorrarCochera(cocheraId: number) {
+    if(this.authService.usuario?.esAdmin == true){
     Swal.fire({
       title: "Eliminar cochera?",
       text: "No se va a recuperar!!",
@@ -65,12 +69,13 @@ export class EstadoCocherasComponent {
       } else if (result.isDenied) {
         Swal.fire("Cambios no guardados", "", "info");
       }
-    });
+    })};
   }
   
   
 
   preguntarDeshabilitarCochera(cocheraId: number){
+    if(this.authService.usuario?.esAdmin == true){
     Swal.fire({
       title: "Deshabilitar cochera?",
       showCancelButton: true,
@@ -92,10 +97,11 @@ export class EstadoCocherasComponent {
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
       }
-    });
+    })};
   }
 
   preguntarHabilitarCochera(cocheraId: number){
+    if(this.authService.usuario?.esAdmin == true){
     Swal.fire({
       title: "Hablitar cochera?",
       showCancelButton: true,
@@ -117,9 +123,33 @@ export class EstadoCocherasComponent {
       } else if (result.isDenied) {
          Swal.fire("Changes are not saved", "", "info");
       }
-    });
+    })};
   }
 
+  // abrirEstacionamiento(idCochera: number) {
+  //   const idUsuarioIngreso = "ADMIN"
+  //   Swal.fire({
+  //     title: "Abrir Cochera",
+  //     html: `<input type="text" id="patente" class="swal2-input" placeholder="Ingrese patente">`,
+  //     showCancelButton: true,
+  //     confirmButtonText: "Abrir",
+  //     cancelButtonText: "Cancelar",
+  //     background: '#1a1a1a', 
+  //     color: '#ffffff',
+  //     preConfirm: () => {
+  //       const patenteInput = document.getElementById("patente") as HTMLInputElement
+  //       if (!patenteInput || !patenteInput.value) {
+  //         Swal.showValidationMessage("Por favor, ingrese una patente")
+  //         return false;
+  //       }
+  //       return { patente: patenteInput.value };
+  //     }
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       const { patente } = result.value;
+  //       await this.dataCocherasService.abrirEstacionamiento(patente, idUsuarioIngreso, idCochera);
+  //     }})
+  // }
   abrirEstacionamiento(idCochera: number) {
     const idUsuarioIngreso = "ADMIN"
     Swal.fire({
@@ -138,19 +168,12 @@ export class EstadoCocherasComponent {
       }
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const { patente } = result.value;
-        await this.dataCocherasService.abrirEstacionamiento(patente, idUsuarioIngreso, idCochera);
+        if (result.value) {
+          const { patente } = result.value;
+          await this.dataCocherasService.abrirEstacionamiento(patente, idUsuarioIngreso, idCochera);
+        }
       }
-      else {
-        Swal.fire({
-          title: "Error",
-          text: "No tienes permiso para realizar esta acción.",
-          icon: "error",
-          background: '#1a1a1a',
-          color: '#ffffff', 
-          confirmButtonColor: "#3085d6" 
-        })
-    }})
+    })
   }
 
   cerrarEstacionamiento(cochera: ICochera) {
@@ -161,6 +184,7 @@ export class EstadoCocherasComponent {
     let patente: string;
     let tarifaABuscar: string;
     let total;
+    let tot;
 
     if (horario) {
         fechaIngreso = new Date(horario);
@@ -182,12 +206,20 @@ export class EstadoCocherasComponent {
         } else {
             tarifaABuscar = "VALORHORA";
         }
+/*tirar un if total = undefined, sino que siga*/
+total = this.dataTarifasService.tarifas.find(t => t.id === tarifaABuscar)?.valor;
+const horaFormateada = fechaIngreso ? fechaIngreso.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
-        total = this.dataTarifasService.tarifas.find(t => t.id === tarifaABuscar)?.valor;
+  if(total == undefined){
+    Swal.close();
+  }
+  else{
+      tot = parseFloat(total)
+  
+    if (horasPasadas > 1){
+        total = tot * (horasPasadas + (minutosPasados /  60));
+      }
     }
-
-    const horaFormateada = fechaIngreso ? fechaIngreso.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-
     Swal.fire({
         html: `
             <div style="text-align: left;">
@@ -196,7 +228,7 @@ export class EstadoCocherasComponent {
                 <hr style="border: 1px solid #ccc;">
                 <h2 style="margin: 20px 0 10px; text-align: center;">Total a cobrar</h2>
                 <div style="background-color: #28a745; color: white; font-size: 24px; padding: 10px; border-radius: 5px; text-align: center; margin: 0 auto; display: block; width: fit-content;">
-                    $${total}
+                $${ total}
                 </div>
                 <div style="margin-top: 20px; text-align: center;">
                     <button id="cobrar" class="swal2-confirm swal2-styled" style="background-color: #007bff; padding: 10px 24px;">Cobrar</button>
@@ -204,6 +236,8 @@ export class EstadoCocherasComponent {
                 </div>
             </div>`,
         showConfirmButton: false,
+        background: '#1a1a1a', 
+        color: '#ffffff',
         didOpen: () => {
             const cobrarButton = document.getElementById('cobrar');
             const volverButton = document.getElementById('volver');
@@ -224,6 +258,5 @@ export class EstadoCocherasComponent {
                 });
             }
         }
-    });
+    });}}
   } 
-}

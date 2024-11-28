@@ -2,7 +2,7 @@
     <h1> Parking App </h1>
     <nav>
         <a [routerLink]="['/parking-state']" routerLinkActive="link-activo">Estado cocheras</a>
-        @if(esAdmin){
+        @if(this.usuario.esAdmin){
             <a [routerLink]="['/reports']" routerLinkActive="link-activo">Reportes</a>
             <a [routerLink]="['/prices']" routerLinkActive="link-activo">Precios</a>
     }

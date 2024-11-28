@@ -33,7 +33,7 @@ main {
         border-collapse: collapse;
         table-layout: fixed;
         border-radius: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(95, 158, 160, 0.5);
         color: $color-texto;
         margin-top: 20px;
 
@@ -112,6 +112,3 @@ main {
     }
 }
 
-button{
-    cursor: pointer !important;
-}

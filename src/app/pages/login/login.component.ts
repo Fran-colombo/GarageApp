@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { DataAuthService } from '../../services/data-auth.service';
-import { FormsModule, NgForm } from '@angular/forms';
+import { Component, inject } from "@angular/core";
+import { FormsModule, NgForm } from "@angular/forms";
+import { Router, RouterModule } from "@angular/router";
+import { DataAuthService } from "../../services/data-auth.service";
+
 
 @Component({
   selector: 'app-login',
@@ -13,20 +14,19 @@ import { FormsModule, NgForm } from '@angular/forms';
 export class LoginComponent {
 
   authService = inject(DataAuthService);
+  
   router = inject(Router);
 
-
-
+  rememberMe = false; 
   errorLogin = false;
   async login(loginForm: NgForm){
     const {username, password} = loginForm.value;
     const loginData = {username, password};
     
-    const res = await this.authService.login(loginData)
+    const res = await this.authService.login(loginData, this.rememberMe)
 
-    if(res?.statusText === "OK") this.router.navigate(['/parking-state']);
+    if(res?.status === 200) this.router.navigate(['/parking-state']);
     
-    else this.errorLogin = true;
+    else this.errorLogin = true, console.log(res?.status);
   }
-
 }

@@ -1,35 +1,27 @@
-import { Injectable } from '@angular/core';
-import { IUsuario } from '../interfaces/usuario';
+import { inject, Injectable } from '@angular/core';
+import { IUsuario, UserByStorage } from '../interfaces/usuario';
 import { ILogin, IResLogin } from '../interfaces/login';
 import { IRegister } from '../interfaces/register';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataAuthService {
+  usuario: IUsuario | UserByStorage | undefined;
+  router = inject(Router);
 
-  constructor() {
-    const token = this.getToken();
-    if(token){
-      if(!this.usuario) this.usuario = {
-        username: '',
-        token: token,
-        esAdmin: false
-      }
-      else this.usuario!.token = token;
-    }
-   }
+  constructor() { }
 
-  usuario: IUsuario | undefined;
 
-  async login(loginData: ILogin) {
-    const res = await fetch(environment.API_URL+'login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(loginData)
+  async login(loginData: ILogin, remember: boolean) {
+    const res = await fetch(environment.API_URL + "login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(loginData)
     });
 
     if (res.status !== 200) return;
@@ -39,32 +31,49 @@ export class DataAuthService {
     if (!resJson.token) return;
 
     this.usuario = {
-        username: loginData.username,
-        token: resJson.token,
-        esAdmin: false
+      username: loginData.username,
+      token: resJson.token,
+      esAdmin: false
     };
 
-    localStorage.setItem("authToken", resJson.token);
+    
+    if (remember) {
+      localStorage.setItem("authToken", resJson.token);
+      localStorage.setItem("username", this.usuario.username);
+    } else {
+      sessionStorage.setItem("authToken", resJson.token);
+      sessionStorage.setItem("username", this.usuario.username);
+    }
 
-    const userDetailsRes = await fetch(environment.API_URL+`usuarios/${encodeURIComponent(loginData.username)}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${resJson.token}`,
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (userDetailsRes.status !== 200) return;
-
-    const userDetailsResJson = await userDetailsRes.json();
-
-    this.usuario.esAdmin = userDetailsResJson.esAdmin;
-
-    return userDetailsRes;
+    await this.fetchUserDetails(loginData.username, resJson.token);
+    return res;
   }
 
+  private async fetchUserDetails(username: string, token: string) {
+    const userDetailsRes = await fetch(environment.API_URL + `usuarios/${encodeURIComponent(username)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  
+    if (userDetailsRes.status !== 200) {
+      if (!this.usuario) {
+        this.usuario = { username: '', token: '', esAdmin: false }; 
+      } else {
+        this.usuario.esAdmin = false
+      }
+    } else {
+      const userDetailsResJson = await userDetailsRes.json();
+      if (!this.usuario) {
+        this.usuario = { username: '', token: token, esAdmin: true }; 
+      }
+      this.usuario.esAdmin = userDetailsResJson.esAdmin; 
+  }}
+
   async register(registerData: IRegister) {
-    const res = await fetch(environment.API_URL+'/register', {
+    const res = await fetch(environment.API_URL + 'register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -76,11 +85,34 @@ export class DataAuthService {
     return res;
   }
 
-  getToken() {
-    return localStorage.getItem("authToken");
+  clearToken() {
+    this.usuario = undefined;
+    localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken"); 
   }
 
-  clearToken() {
-    return localStorage.removeItem("authToken")
+  async setUserByStorage() {
+    let token = localStorage.getItem("authToken");
+    let username = localStorage.getItem("username");
+
+    if (!token) {
+      token = sessionStorage.getItem("authToken");
+      username = sessionStorage.getItem("username");
+      if (!token) return;
+    }
+
+    const cfg = {
+      method: "GET",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+
+    const res = await fetch(environment.API_URL + `usuarios/${username}`, cfg);
+    if (res.ok) {
+      const data = await res.json();
+      this.usuario = { ...data, token }; 
+      this.router.navigate(["/parking-state"]);
+    }
   }
 }

@@ -23,6 +23,8 @@ export class PricesComponent {
       showCancelButton: true,
       confirmButtonText: "Actualizar",
       cancelButtonText: "Cancelar",
+      background: '#1a1a1a', 
+      color: '#ffffff',
       inputValidator: (value) => {
         if (!value || isNaN(Number(value)) || Number(value) <= 0) {
           return "Ingrese un valor numérico válido y mayor a 0";

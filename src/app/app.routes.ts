@@ -19,10 +19,12 @@ export const routes: Routes = [
     {
         path: "login",
         component: LoginComponent,
+        canActivate: [soloPublicoGuard]
     },
     {
         path: "register",
         component: RegisterComponent,
+        canActivate: [soloPublicoGuard]
     },
     {
         path: "",

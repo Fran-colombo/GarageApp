@@ -32,7 +32,6 @@
                 <td>{{ cochera.descripcion }}</td>
                 <td class="acciones-container"> 
                     @if(!cochera.estacionamiento?.patente){
-                        @if(authService.usuario?.esAdmin == true){
                         @if(!cochera.deshabilitada ){
                             <button (click)="preguntarDeshabilitarCochera(cochera.id)"><img src="/assets/img/icons/prohibido.png" alt="Deshabilitar cochera" class="acciones-container">
                             </button>
@@ -40,8 +39,6 @@
                             <button (click)="preguntarHabilitarCochera(cochera.id)"><img src="/assets/img/icons/ok.png" alt="Habilitar cochera" class="acciones-container"></button>
                         }
                             <button (click)="preguntarBorrarCochera(cochera.id)"><img src="/assets/img/icons/contenedor-de-basura.png" alt="Eliminar cochera" class="acciones-container"></button>
-                        
-                    }
                     }
                 </td>
             </tr>

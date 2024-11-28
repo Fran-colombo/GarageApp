@@ -8,9 +8,9 @@
             <input type="password" id="password" placeholder="Contraseña" name="password" ngModel required>
             <button [disabled]="registerForm.invalid" class="boton-resaltado" type="submit">Registrarse</button>
             @if(errorRegister) {
-                <p>Error en login</p>
+                <p>Error en el registro</p>
             }
-            <a [routerLink]="['/login']" class="boton-resaltado"> Log in </a>
+            <a [routerLink]="['/login']" class="boton-resaltado"> Volver al inicio </a>
         </form>
     </div>
 </main>

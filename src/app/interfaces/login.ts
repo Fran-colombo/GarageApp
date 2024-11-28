@@ -4,7 +4,8 @@ export interface ILogin{
 }
 
 export interface IResLogin {
-    estado: string,
-    mensaje: string,
-    token?: string
+    mensaje: string;
+    status: string | number;
+    token?: string;
+    esAdmin: boolean;
 }
