@@ -31,6 +31,7 @@ export class DataCocherasService {
     if(res.status !== 200) return;
     const resJson: ICochera[] = await res.json();
     this.cocheras = resJson;
+    return resJson;
   }
 
   async getEstacionamientos(){
@@ -161,4 +162,7 @@ async abrirEstacionamiento(patente: string, idUsuarioIngreso: string, idCochera:
       this.loadData();
     };    
   }
+
+
 }
+

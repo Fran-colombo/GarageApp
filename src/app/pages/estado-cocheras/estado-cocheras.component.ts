@@ -19,7 +19,7 @@ export class EstadoCocherasComponent {
   authService = inject(DataAuthService);
   dataTarifasService = inject(DataTarifasService);
   dataCocherasService = inject(DataCocherasService)
-
+  cochera: ICochera [] = []
   
 
   preguntarAgregarCochera(){
@@ -84,6 +84,7 @@ export class EstadoCocherasComponent {
       background: '#1a1a1a', 
       color: '#ffffff'
     }).then(async (result) => {
+      
       if (result.isConfirmed) {
         await this.dataCocherasService.deshabilitarCochera(cocheraId)
           Swal.fire({
@@ -126,55 +127,50 @@ export class EstadoCocherasComponent {
     })};
   }
 
-  // abrirEstacionamiento(idCochera: number) {
-  //   const idUsuarioIngreso = "ADMIN"
-  //   Swal.fire({
-  //     title: "Abrir Cochera",
-  //     html: `<input type="text" id="patente" class="swal2-input" placeholder="Ingrese patente">`,
-  //     showCancelButton: true,
-  //     confirmButtonText: "Abrir",
-  //     cancelButtonText: "Cancelar",
-  //     background: '#1a1a1a', 
-  //     color: '#ffffff',
-  //     preConfirm: () => {
-  //       const patenteInput = document.getElementById("patente") as HTMLInputElement
-  //       if (!patenteInput || !patenteInput.value) {
-  //         Swal.showValidationMessage("Por favor, ingrese una patente")
-  //         return false;
-  //       }
-  //       return { patente: patenteInput.value };
-  //     }
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       const { patente } = result.value;
-  //       await this.dataCocherasService.abrirEstacionamiento(patente, idUsuarioIngreso, idCochera);
-  //     }})
-  // }
-  abrirEstacionamiento(idCochera: number) {
-    const idUsuarioIngreso = "ADMIN"
-    Swal.fire({
-      title: "Abrir Cochera",
-      html: `<input type="text" id="patente" class="swal2-input" placeholder="Ingrese patente">`,
-      showCancelButton: true,
-      confirmButtonText: "Abrir",
-      cancelButtonText: "Cancelar",
-      preConfirm: () => {
-        const patenteInput = document.getElementById("patente") as HTMLInputElement
-        if (!patenteInput || !patenteInput.value) {
-          Swal.showValidationMessage("Por favor, ingrese una patente")
-          return false;
-        }
-        return { patente: patenteInput.value };
+
+abrirEstacionamiento(idCochera: number) {
+  const idUsuarioIngreso = "ADMIN";
+  Swal.fire({
+    title: "Abrir Cochera",
+    html: `<input type="text" id="patente" class="swal2-input" placeholder="Ingrese patente">`,
+    showCancelButton: true,
+    confirmButtonText: "Abrir",
+    cancelButtonText: "Cancelar",
+    preConfirm: async () => {
+      const patenteInput = document.getElementById("patente") as HTMLInputElement;
+      if (!patenteInput || !patenteInput.value.trim()) {
+        Swal.showValidationMessage("Por favor, ingrese una patente válida");
+        return false;
       }
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        if (result.value) {
-          const { patente } = result.value;
-          await this.dataCocherasService.abrirEstacionamiento(patente, idUsuarioIngreso, idCochera);
-        }
+
+      const patenteIngresada = patenteInput.value.trim();
+      const patenteOcupada = this.dataCocherasService.estacionamientos.find(
+        (estacionamiento: any) =>
+          estacionamiento.patente === patenteIngresada && estacionamiento.horaEgreso === null
+      );
+
+      if (patenteOcupada) {
+        Swal.showValidationMessage(
+          `La patente ${patenteIngresada} ya está ocupando una cochera activa.`
+        );
+        return false; 
       }
-    })
-  }
+
+      return { patente: patenteIngresada };
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed && result.value) {
+      const { patente } = result.value;
+      await this.dataCocherasService.abrirEstacionamiento(patente, idUsuarioIngreso, idCochera);
+      Swal.fire({
+        icon: "success",
+        title: "Cochera Abierta",
+        text: "La cochera se abrió correctamente.",
+      });
+    }
+  });
+}
+
 
   cerrarEstacionamiento(cochera: ICochera) {
     const horario = cochera.estacionamiento?.horaIngreso;
