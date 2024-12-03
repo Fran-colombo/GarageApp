@@ -12,7 +12,9 @@ export class DataAuthService {
   usuario: IUsuario | UserByStorage | undefined;
   router = inject(Router);
 
-  constructor() { }
+  constructor() {
+    this.setUserByStorage();
+   }
 
 
   async login(loginData: ILogin, remember: boolean) {
@@ -38,11 +40,11 @@ export class DataAuthService {
 
     
     if (remember) {
-      localStorage.setItem("authToken", resJson.token);
-      localStorage.setItem("username", this.usuario.username);
-    } else {
       sessionStorage.setItem("authToken", resJson.token);
       sessionStorage.setItem("username", this.usuario.username);
+    } else {
+      localStorage.setItem("authToken", resJson.token);
+      localStorage.setItem("username", this.usuario.username);
     }
 
     await this.fetchUserDetails(loginData.username, resJson.token);

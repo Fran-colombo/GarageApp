@@ -202,7 +202,7 @@ abrirEstacionamiento(idCochera: number) {
         } else {
             tarifaABuscar = "VALORHORA";
         }
-/*tirar un if total = undefined, sino que siga*/
+
 total = this.dataTarifasService.tarifas.find(t => t.id === tarifaABuscar)?.valor;
 const horaFormateada = fechaIngreso ? fechaIngreso.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
@@ -214,6 +214,7 @@ const horaFormateada = fechaIngreso ? fechaIngreso.toLocaleTimeString([], { hour
   
     if (horasPasadas > 1){
         total = tot * (horasPasadas + (minutosPasados /  60));
+        total = parseFloat(total.toFixed(2));
       }
     }
     Swal.fire({

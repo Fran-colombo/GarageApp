@@ -1,7 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { Inject, inject, Injectable } from '@angular/core';
 import { ICochera } from '../interfaces/cochera';
 import { IEstacionamiento } from '../interfaces/estacionamiento';
 import { environment } from '../../environments/environment';
+import { DataAuthService } from './data-auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { environment } from '../../environments/environment';
 export class DataCocherasService {
   cocheras: ICochera[] = []
   estacionamientos: IEstacionamiento[] = []
+  dataAuthService = Inject(DataAuthService)
   
   
   constructor() {
